@@ -1,21 +1,18 @@
 class Event < ApplicationRecord
-    has_many :attendances
-    has_many :paticipants
-    belongs_to :user
-
-    validates :start_date, presence: true, if :future_event
-    validates :duration, presence: true, greater_than: :0, numericality: { only_integer: true }, if: :modulo5
-    validates :title, prensence: true, length: { in: 5..140 }
-    validates :description, prensence: true, length: { in: 20..1000 }
-    validates :price, prensence: true, length: { in: 1..1000 }
-    validates :location, prensence: true
+    validates :title, length: { in: 5..140, message: "must be between 5 and 140 charachters" }
+    validates :start_date, presence:true
+    validates :duration, presence:true, numericality: { only_integer: true, greater_than: 0 }, if: :modulo5?
+    validates :price, presence:true, numericality: { only_integer: true, greater_than: 0, less_than: 1000 }
+    validates :location, presence:true
+    validates :description, presence:true, length: { in: 20..1000, message: "must be between 20 and 1000 charachters" }
     
-    def future_event
-        start_date => Date.today
-    end
+    belongs_to :administrator, class_name: "User"
+    has_many :attendances
+    has_many :users, through: :attendances
+  
 
     def modulo5
         duration/5==Integer
       end
-
-end
+      
+  end
